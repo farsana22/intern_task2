@@ -156,8 +156,9 @@
 }
 
 .todoTime {
-  font-size: 9px;
-  font-weight: 300;
+  font-size: 10px;
+  font-weight: 600;
+  color: #818181;
 }
 
 hr {
@@ -182,7 +183,7 @@ hr {
   justify-content: center;
   margin-left: 3px;
   border-radius: 35%;
-  background-color: #2dff3e86;
+  background-color: #00ce11f8;
 }
 
 .todoItemCol {
@@ -414,8 +415,9 @@ hr {
 
 @media only screen and (max-width: 767px) {
   .todoTime {
-    font-size: 8px;
-    font-weight: 300;
+    font-size: 9px;
+    font-weight: 400;
+    color: #686868f8;
   }
 
   .todoTitle {
@@ -452,7 +454,7 @@ hr {
     margin-left: 2px;
     border-radius: 35%;
     color: #fff;
-    background-color: #2dff3e86;
+    background-color: #00c210;
   }
 }
 
@@ -531,4 +533,9 @@ hr {
   display: flex;
   gap: 1rem;
   align-items: center;
+}
+
+.count{
+  color: #fff;
+  font-weight: 600;
 }

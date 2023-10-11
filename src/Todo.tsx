@@ -154,10 +154,10 @@ export const Todo = () => {
             <div >
               <div className="info">
                 <div className="infoWrapper">
-                  <span className="infoItem">Created Tasks: </span><div className="createdList">{countAllTodos()}</div>
+                  <span className="infoItem">Created Tasks: </span><div className="createdList"><span className="count">{countAllTodos()}</span></div>
                 </div>
                 <div className="infoWrapper">
-                  <span className="infoItem">Completed Tasks:</span><div className="createdList">{countCompletedTodos()}/{countAllTodos()}</div>
+                  <span className="infoItem">Completed Tasks:</span><div className="createdList"><span className="count">{countCompletedTodos()}/{countAllTodos()}</span></div>
                 </div>
               </div>
               <hr />
