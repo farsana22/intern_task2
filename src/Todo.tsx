@@ -3,11 +3,12 @@ import nothingImg from './assets/nodata.png'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 interface todoType {
   id: number;
   title: string;
-  date: string;
+  created: string;
   isCompleted: boolean;
 }
 
@@ -111,6 +112,14 @@ export const Todo = () => {
   //get completed todo count 
   const countCompletedTodos = () => todos.filter((todo: any) => todo.isCompleted).length;
 
+  const formattedTodos = todos.map((todo) => ({
+    id: todo.id,
+    title: todo.title,
+    isCompleted: todo?.isCompleted,
+    created: format(new Date(todo.created), 'MM/dd/yyyy'),
+    createdTime: format(new Date(todo?.created), 'HH:mm:ss') // Convert timestamp to a formatted date
+  }));
+
   return (
     <div className="App">
       <div className="container">
@@ -170,7 +179,7 @@ export const Todo = () => {
               <div className="todoItemCol">
 
                 {
-                  todos && todos.map((task) => (
+                  todos && formattedTodos.map((task) => (
 
                     <div className="todoItem" key={task?.id}>
                       <div className="todoItemWrapper">
@@ -194,7 +203,10 @@ export const Todo = () => {
                         </div>
                         <div className="todoDetails">
                           <span className="todoTitle">{task.title}</span>
-                          <span className="todoTime">{task.date}</span>
+                          <div className="timeBox">
+                            <span className="todoTime">{task.created}</span>
+                            <span className="todoTime">{task.createdTime}</span>
+                          </div>
                         </div>
                         <div className="action">
                           <span className="material-symbols-outlined check" onClick={(e: any) => {

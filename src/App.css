@@ -526,3 +526,9 @@ hr {
   text-decoration: none;
   font-weight: 500;
 }
+
+.timeBox{
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
