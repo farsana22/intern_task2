@@ -49,7 +49,9 @@ export const Todo = () => {
       const newTodo = res.data;
       setTodos((prevTodos) => [...prevTodos, newTodo]);
     }).catch((err) => {
-      toast.error("Something went wrong!")
+      if (err) {
+        toast.error("Something went wrong!")
+      }
     })
   }
 
