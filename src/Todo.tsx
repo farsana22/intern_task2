@@ -207,7 +207,7 @@ export const Todo = () => {
         </div>
       </div>
       <div className="love">
-        <span className="author">Made with <span className="emoji">❤️</span> by Farsana</span>
+        <span className="author">Made with <span className="emoji">💚</span> by Farsana</span>
       </div>
     </div>
   )
