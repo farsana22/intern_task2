@@ -26,10 +26,8 @@ export const Todo = () => {
         Authorization: "Bearer " + Token
       }
     }).then((res) => {
-      console.log(res.data);
       setTodos(res.data);
     }).catch((err) => {
-      console.log(err);
       if (err.response.status) {
         localStorage.clear();
         navigate('/login')
@@ -47,12 +45,10 @@ export const Todo = () => {
         'content-type': 'multipart/form-data',
       }
     }).then((res) => {
-      console.log(res.data);
       toast.success("Todo added!");
       const newTodo = res.data;
       setTodos((prevTodos) => [...prevTodos, newTodo]);
     }).catch((err) => {
-      console.log(err);
       toast.error("Something went wrong!")
     })
   }
@@ -69,7 +65,6 @@ export const Todo = () => {
 
   function handleChange(e: any) {
     setTodo(e.target.value)
-    console.log(todo)
   }
 
   //update a todo status
@@ -80,18 +75,16 @@ export const Todo = () => {
         'content-type': 'multipart/form-data',
       }
     }).then((res) => {
-      console.log(res)
       setTodos((prevTodos) =>
         prevTodos.map((todo) =>
           todo.id === id ? res.data : todo
         )
       );
-      console.log(todos)
     })
   };
 
 
-//delete a todo status
+  //delete a todo status
   const deleteTodo = (id: any) => {
     axios.delete(BASE_URL + `todo/${id}/`, {
       headers: {
@@ -99,10 +92,13 @@ export const Todo = () => {
         'content-type': 'multipart/form-data',
       }
     }).then((res) => {
-      console.log(res)
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+      if (res) {
+        setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+      }
     }).catch((err) => {
-      console.log(err);
+      if (err) {
+        toast.error("Something went wrong!")
+      }
     })
     countCompletedTodos();
   };
@@ -173,7 +169,6 @@ export const Todo = () => {
                           {task?.isCompleted
                             ?
                             <span onClick={(e: any) => {
-                              console.log("first")
                               e.preventDefault();
                               updateTodo(task?.id)
                             }} className="material-symbols-outlined check">
@@ -181,7 +176,6 @@ export const Todo = () => {
                             </span>
                             :
                             <span onClick={(e: any) => {
-                              console.log("first")
                               e.preventDefault();
                               updateTodo(task?.id)
                             }} className="material-symbols-outlined check">
