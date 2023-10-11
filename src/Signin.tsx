@@ -2,23 +2,28 @@ import axios from 'axios';
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom';
+import { PropagateLoader } from 'react-spinners';
 
 function Signin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false)
 
     const navigate = useNavigate();
     const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
 
     const handleSignup = () => {
+        setLoading(true)
         axios.post(BASE_URL + 'register/', {
             username,
             password
         }).then((res) => {
+            setLoading(false);
             toast.success(res.data.message);
             navigate('/login');
         }).catch((err) => {
-            err.response.data.username.map((msg:any)=>(
+            setLoading(false)
+            err.response.data.username.map((msg: any) => (
                 toast.error(msg)
             ))
         })
@@ -42,8 +47,14 @@ function Signin() {
                         }} />
                         <button className="loginBtn" onClick={(e) => {
                             e.preventDefault();
-                            handleSignup();
-                        }}>Login</button>
+                            if (username == "") {
+                                toast.error("Please enter username")
+                            } else if (password === "") {
+                                toast.error("Please enter password")
+                            } else {
+                                handleSignup();
+                            }
+                        }}>{loading ? <PropagateLoader size={10} color="#FFF" /> : "Sign-up"}</button>
                         <span className="nav">Already have an account ? <span className='navHigh' onClick={() => {
                             navigate('/login')
                         }}>Login</span></span>

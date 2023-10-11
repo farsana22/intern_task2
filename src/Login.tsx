@@ -2,33 +2,35 @@ import axios from 'axios';
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { PropagateLoader } from 'react-spinners';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false)
 
     const navigate = useNavigate();
     const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
 
     const Token = localStorage.getItem('accessToken')
-    console.log(Token)
     useEffect(() => {
         if (Token) {
             navigate('/');
         }
-    },[])
+    }, [])
 
     const handleLogin = () => {
+        setLoading(true)
         axios.post(BASE_URL + 'login/', {
             username,
             password
         }).then((res) => {
-            console.log(res.data.access)
+            setLoading(false)
             localStorage.setItem('accessToken', res?.data?.access);
             localStorage.setItem('refreshToken', res?.data?.refresh);
             navigate('/');
         }).catch((err: any) => {
-            console.log(err.response.data.detail)
+            setLoading(false)
             toast.error(err.response.data.detail)
         })
     };
@@ -52,10 +54,16 @@ function Login() {
                             e.preventDefault();
                             setPassword(e.target.value);
                         }} />
-                        <button className="loginBtn" onClick={(e) => {
+                        <button disabled={loading} className="loginBtn" onClick={(e) => {
                             e.preventDefault();
-                            handleLogin();
-                        }}>Login</button>
+                            if (username == "") {
+                                toast.error("Please enter username")
+                            } else if (password === "") {
+                                toast.error("Please enter password")
+                            } else {
+                                handleLogin();
+                            }
+                        }}>{loading ? <PropagateLoader size={10} color="#FFF" /> : "Login"}</button>
                         <span className="nav">Have'nt signed yet! <span className='navHigh' onClick={() => {
                             navigate('/signin')
                         }}>Signin</span></span>
