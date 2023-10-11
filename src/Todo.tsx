@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 interface todoType {
-  id: string;
+  id: number;
   title: string;
   date: string;
-  isComplete: boolean | undefined;
+  isCompleted: boolean;
 }
 
 export const Todo = () => {
@@ -28,23 +28,36 @@ export const Todo = () => {
       }
     }).then((res) => {
       console.log(res.data);
+      setTodos(res.data);
     }).catch((err) => {
       console.log(err);
+      if (err.response.status) {
+        localStorage.clear();
+        navigate('/login')
+      }
     })
   }
 
+  const formData = new FormData();
+  formData.append('title', todo);
+
   //add todo
   const AddATodo = () => {
-     axios.post(BASE_URL + 'todo/', {
-     title: todo
+    axios.post(BASE_URL + 'todo/', {
+      title: todo
     }, {
       headers: {
-        Authorization: "Bearer " + Token
+        Authorization: "Bearer " + Token,
+        'content-type': 'multipart/form-data',
       }
     }).then((res) => {
       console.log(res.data);
+      toast.success("Todo added!");
+      const newTodo = res.data;
+      setTodos((prevTodos) => [...prevTodos, newTodo]);
     }).catch((err) => {
       console.log(err);
+      toast.error("Something went wrong!")
     })
   }
 
@@ -58,53 +71,43 @@ export const Todo = () => {
     }
   }, [])
 
-
-  const generateUniqueId = () => {
-    return new Date().getTime().toString();
-  }
-
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
-    setTodos(storedTodos)
-  }, [])
-
   function handleChange(e: any) {
     setTodo(e.target.value)
     console.log(todo)
   }
 
-  function addTodo() {
-    if (todo === "") {
-      toast.error("Please enter something!")
-    }
-    else {
-      const newTodo = {
-        id: generateUniqueId(),
-        title: todo,
-        date: new Date().toLocaleString(),
-        isComplete: todoStatus
+  const updateTodo = (id: number) => {
+    axios.put(BASE_URL + `todo/${id}/`, {}, {
+      headers: {
+        Authorization: "Bearer " + Token,
+        'content-type': 'multipart/form-data',
       }
-      setTodos([...todos, newTodo]);
-      localStorage.setItem('todos', JSON.stringify([...todos, newTodo]));
-      setTodo("")
-      countAllTodos();
-
-    }
-  }
-
-  const deleteTodo = (id: any) => {
-    const updatedTodos = todos.filter((todo: any) => todo.id !== id);
-    setTodos(updatedTodos);
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
-    countCompletedTodos()
+    }).then((res) => {
+      console.log(res)
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === id ? res.data : todo
+        )
+      );
+      console.log(todos)
+    })
   };
 
-  //get all todos
-  const AllTodos = () => {
-    const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
-    setTodos(storedTodos)
-  }
 
+  const deleteTodo = (id: any) => {
+    axios.delete(BASE_URL + `todo/${id}/`, {
+      headers: {
+        Authorization: "Bearer " + Token,
+        'content-type': 'multipart/form-data',
+      }
+    }).then((res) => {
+      console.log(res)
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+    }).catch((err) => {
+      console.log(err);
+    })
+    countCompletedTodos();
+  };
 
   //update the status of the todo
   const handleCompletion = (index: any) => {
@@ -123,7 +126,7 @@ export const Todo = () => {
   const countAllTodos = () => todos.length;
 
   //get completed todo count 
-  const countCompletedTodos = () => todos.filter((todo: any) => todo.isComplete).length;
+  const countCompletedTodos = () => todos.filter((todo: any) => todo.isCompleted).length;
 
   //clear completed
   const clearCompleted = () => {
@@ -131,8 +134,8 @@ export const Todo = () => {
     const updatedTodos = storedTodos.filter((todo: { isComplete: any; }) => !todo.isComplete);
     if (updatedTodos) {
       localStorage.setItem('todos', JSON.stringify(updatedTodos));
-      AllTodos();
-      setTodos((prevTodos) => prevTodos.filter((todo) => !todo.isComplete));
+      // AllTodos();
+      setTodos((prevTodos) => prevTodos.filter((todo) => !todo.isCompleted));
     } else {
       toast.error("You haven't anything to remove")
     }
@@ -225,12 +228,12 @@ export const Todo = () => {
                     <div className="todoItem" key={task?.id}>
                       <div className="todoItemWrapper">
                         <div className="checkbox">
-                          {task?.isComplete
+                          {task?.isCompleted
                             ?
                             <span onClick={(e: any) => {
                               console.log("first")
                               e.preventDefault();
-                              handleCompletion(task?.id)
+                              updateTodo(task?.id)
                             }} className="material-symbols-outlined check">
                               check_circle
                             </span>
@@ -238,7 +241,7 @@ export const Todo = () => {
                             <span onClick={(e: any) => {
                               console.log("first")
                               e.preventDefault();
-                              handleCompletion(task?.id)
+                              updateTodo(task?.id)
                             }} className="material-symbols-outlined check">
                               radio_button_unchecked
                             </span>
@@ -271,7 +274,7 @@ export const Todo = () => {
             </div>
             <div className="actions">
               <span className="actionTxt" onClick={() => {
-                AllTodos();
+                // AllTodos();
               }}>All</span>
               <span className="actionTxt" onClick={() => {
                 activeTodos();
