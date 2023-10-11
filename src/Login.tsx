@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -7,27 +8,20 @@ function Login() {
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
+    const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
+
+
 
     const handleLogin = () => {
-        const user = localStorage.getItem('user');
-        if (user) {
-            const storedUser = JSON.parse(user);
-            if (username === storedUser.username && password === storedUser.password) {
-                localStorage.setItem('isUserLoggedIn',JSON.stringify(true));
-                toast.success('Login successful');
-                navigate('/')
-                setUsername("")
-                setPassword("")
-            } else {
-                toast.error('Invalid credentials');
-                setPassword("")
-                setUsername("")
-            }
-        } else {
-            toast.error('User not found');
-            setPassword("")
-            setUsername("")
-        }
+       axios.post(BASE_URL+'login/',{
+        username,
+        password
+       }).then((res)=>{
+        console.log(res)
+       }).catch((err:any)=>{
+        console.log(err.response.data.detail)
+        toast.error(err.response.data.detail)
+       })
     };
 
 
