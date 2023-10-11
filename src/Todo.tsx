@@ -129,7 +129,14 @@ export const Todo = () => {
         </div>
         <div className="inputBox">
           <input type="text" className='todoinput' onChange={(e: any) => handleChange(e)} value={todo} placeholder='Add a new task' />
-          <span className="material-symbols-outlined send" onClick={AddATodo} >
+          <span className="material-symbols-outlined send" onClick={(e) => {
+            e.preventDefault();
+            if (todo !== "") {
+              AddATodo();
+            } else {
+              toast.error("Please enter something!")
+            }
+          }} >
             send
           </span>
         </div>
