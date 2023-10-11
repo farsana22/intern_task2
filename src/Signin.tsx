@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom';
@@ -7,16 +8,20 @@ function Signin() {
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate();
+    const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
 
     const handleSignup = () => {
-        const user = { username, password };
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('isUserLoggedIn', JSON.stringify(false));
-        toast.success("Signup Successfull!")
-        toast.success("Please Login to continue.")
-        navigate('/login')
-        setPassword("")
-        setUsername("")
+        axios.post(BASE_URL + 'register/', {
+            username,
+            password
+        }).then((res) => {
+            toast.success(res.data.message);
+            navigate('/login');
+        }).catch((err) => {
+            err.response.data.username.map((msg:any)=>(
+                toast.error(msg)
+            ))
+        })
     };
     return (
         <>

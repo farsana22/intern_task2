@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import nothingImg from './assets/nodata.png'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface todoType {
   id: string;
@@ -15,20 +16,52 @@ export const Todo = () => {
   const [todos, setTodos] = useState<todoType[]>([]);
   const [todo, setTodo] = useState<string>("");
   const [todoStatus] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
+  const Token = localStorage.getItem('accessToken');
 
-  const user = localStorage.getItem('isUserLoggedIn');
+  //get todo
+  const getAllTodos = async () => {
+    await axios.get(BASE_URL + 'todo/', {
+      headers: {
+        Authorization: "Bearer " + Token
+      }
+    }).then((res) => {
+      console.log(res.data);
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
 
+  //add todo
+  const AddATodo = () => {
+     axios.post(BASE_URL + 'todo/', {
+     title: todo
+    }, {
+      headers: {
+        Authorization: "Bearer " + Token
+      }
+    }).then((res) => {
+      console.log(res.data);
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+
+
+  //get all todos useffect
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
+    if (Token) {
+      getAllTodos();
+    } else {
+      navigate('/login')
     }
   }, [])
+
 
   const generateUniqueId = () => {
     return new Date().getTime().toString();
   }
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
@@ -142,17 +175,18 @@ export const Todo = () => {
       <div className="todowrapper">
         <div className="titleBox">
           <span className="title">Todo</span>
-          <button className='logout' onClick={() => {
-            localStorage.setItem('isUserLoggedIn', JSON.stringify(false))
+          <button className='logout' onClick={(e) => {
+            e.preventDefault();
+            localStorage.clear();
+            toast.success("Logout Successful")
             setTimeout(() => {
-              toast.success("Logout Successful")
               navigate('/login')
-            }, 400);
+            }, 900);
           }}>Logout</button>
         </div>
         <div className="inputBox">
           <input type="text" className='todoinput' onChange={(e: any) => handleChange(e)} value={todo} placeholder='Add a new task' />
-          <span className="material-symbols-outlined send" onClick={addTodo} >
+          <span className="material-symbols-outlined send" onClick={AddATodo} >
             send
           </span>
         </div>

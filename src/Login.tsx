@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,18 +10,27 @@ function Login() {
     const navigate = useNavigate();
     const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
 
-
+    const Token = localStorage.getItem('accessToken')
+    console.log(Token)
+    useEffect(() => {
+        if (Token) {
+            navigate('/');
+        }
+    },[])
 
     const handleLogin = () => {
-       axios.post(BASE_URL+'login/',{
-        username,
-        password
-       }).then((res)=>{
-        console.log(res)
-       }).catch((err:any)=>{
-        console.log(err.response.data.detail)
-        toast.error(err.response.data.detail)
-       })
+        axios.post(BASE_URL + 'login/', {
+            username,
+            password
+        }).then((res) => {
+            console.log(res.data.access)
+            localStorage.setItem('accessToken', res?.data?.access);
+            localStorage.setItem('refreshToken', res?.data?.refresh);
+            navigate('/');
+        }).catch((err: any) => {
+            console.log(err.response.data.detail)
+            toast.error(err.response.data.detail)
+        })
     };
 
 
