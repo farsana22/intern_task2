@@ -15,7 +15,6 @@ export const Todo = () => {
 
   const [todos, setTodos] = useState<todoType[]>([]);
   const [todo, setTodo] = useState<string>("");
-  const [todoStatus] = useState<boolean>(false);
   const navigate = useNavigate();
   const BASE_URL = "https://www.mulearn.org/api/v1/mulearn-task/"
   const Token = localStorage.getItem('accessToken');
@@ -36,10 +35,7 @@ export const Todo = () => {
         navigate('/login')
       }
     })
-  }
-
-  const formData = new FormData();
-  formData.append('title', todo);
+  };
 
   //add todo
   const AddATodo = () => {
@@ -76,6 +72,7 @@ export const Todo = () => {
     console.log(todo)
   }
 
+  //update a todo status
   const updateTodo = (id: number) => {
     axios.put(BASE_URL + `todo/${id}/`, {}, {
       headers: {
@@ -94,6 +91,7 @@ export const Todo = () => {
   };
 
 
+//delete a todo status
   const deleteTodo = (id: any) => {
     axios.delete(BASE_URL + `todo/${id}/`, {
       headers: {
@@ -109,67 +107,11 @@ export const Todo = () => {
     countCompletedTodos();
   };
 
-  //update the status of the todo
-  const handleCompletion = (index: any) => {
-    const updatedTodos = todos.map((todo: any) => {
-      if (todo.id === index) {
-        return { ...todo, isComplete: !todo.isComplete };
-      }
-      return todo;
-    });
-    setTodos(updatedTodos);
-    countCompletedTodos()
-    localStorage.setItem('todos', JSON.stringify(updatedTodos));
-  };
-
   //get todo count
   const countAllTodos = () => todos.length;
 
   //get completed todo count 
   const countCompletedTodos = () => todos.filter((todo: any) => todo.isCompleted).length;
-
-  //clear completed
-  const clearCompleted = () => {
-    const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
-    const updatedTodos = storedTodos.filter((todo: { isComplete: any; }) => !todo.isComplete);
-    if (updatedTodos) {
-      localStorage.setItem('todos', JSON.stringify(updatedTodos));
-      // AllTodos();
-      setTodos((prevTodos) => prevTodos.filter((todo) => !todo.isCompleted));
-    } else {
-      toast.error("You haven't anything to remove")
-    }
-  };
-
-  //clear all
-  const clearAll = () => {
-    localStorage.removeItem('todos');
-    const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
-    setTodos(storedTodos)
-  };
-
-
-  //get active todos
-  const activeTodos = () => {
-    const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
-    const active = storedTodos.filter((todo: { isComplete: any; }) => !todo.isComplete);
-    if (active.length === 0) {
-      toast.error("There is no active Todos!")
-    } else {
-      setTodos(active);
-    }
-  }
-
-  //get completed
-  const getCompletedTodos = () => {
-    const storedTodos = JSON.parse(localStorage.getItem('todos') || '[]');
-    const active = storedTodos.filter((todo: { isComplete: any; }) => todo.isComplete);
-    if (active.length === 0) {
-      toast.error("You haven't completed any todo!")
-    } else {
-      setTodos(active);
-    }
-  };
 
   return (
     <div className="App">
@@ -266,29 +208,6 @@ export const Todo = () => {
                 }
               </div>
           }
-          {todos.length !== 0 && <div className="actionsBar">
-            <div className="actions">
-              <span className="actionTxt" onClick={() => {
-                clearAll()
-              }}>Clear All</span>
-            </div>
-            <div className="actions">
-              <span className="actionTxt" onClick={() => {
-                // AllTodos();
-              }}>All</span>
-              <span className="actionTxt" onClick={() => {
-                activeTodos();
-              }}>Active</span>
-              <span className="actionTxt" onClick={() => {
-                getCompletedTodos();
-              }}>Completed</span>
-            </div>
-            <div className="actions">
-              <span className="actionTxt" onClick={() => {
-                clearCompleted()
-              }}>Clear Completed</span>
-            </div>
-          </div>}
         </div>
       </div>
       <div className="love">
